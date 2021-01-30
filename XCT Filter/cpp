@@ -1,0 +1,38 @@
+#include <opencv2/core.hpp>
+#include <opencv2/imgproc.hpp>
+#include <opencv2/imgcodecs.hpp>
+#include <opencv2/highgui.hpp>
+#include <opencv2/photo.hpp>
+#include <iostream>
+#include <vector>
+using namespace cv;
+using namespace std;
+
+int main()
+{
+    String folder = "../../xctimages/set1sample2raw/";
+    vector<String> fns;
+    glob(folder, fns);
+    cout << "\n number of files: " << fns.size() << endl;
+ //  cout << fns[2] << endl;
+
+ //   Mat image, dstdenoised;
+    vector<Mat> image, dstdenoised, dst;
+    Mat tmp;
+    for (int i = 0; i < 2; i++)
+    {
+        image.push_back(imread(fns[i], IMREAD_GRAYSCALE));
+        fastNlMeansDenoising(image[i], tmp, 15.0, 7, 21);
+        dstdenoised.push_back(tmp);
+        adaptiveThreshold(dstdenoised[i], tmp, 255, ADAPTIVE_THRESH_MEAN_C, THRESH_BINARY, 5, 2);
+        dst.push_back(tmp);
+    }
+    namedWindow("Threshold", WINDOW_AUTOSIZE); // Create a window for display.
+    for (int i = 0; i < dst.size(); i++)
+    {
+        imshow("Threshold"+i, dst[i]); // Show our image inside it.
+    //   imwrite("tree.png", image);
+        waitKey(0); // Wait for a keystroke in the window 
+    }
+    return 0;
+}
